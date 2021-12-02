@@ -1,0 +1,71 @@
+﻿@model Application.Dtos.PostTicketFormInfoDto
+@{
+    ViewData["Title"] = "Add Ticket";
+}
+
+@section Styles{
+     <link rel="stylesheet" href="~/css/Ticket/ticketpostticketform.css" />
+}
+
+<div class="flex-container">
+    <h1 class="flex-container__header">Add Ticket</h1>
+    <form class="post-ticket-form" name="post-ticket-form" asp-controller="Ticket" asp-action="PostTicket" method="post">
+        <div class="post-ticket-form__item">
+            <label class="post-ticket-form__label" for="TicketTypeId">TicketType</label>
+            <select class="post-ticket-form__input" id="TicketTypeId" name="TicketTypeId" required>
+                <option value="" selected>Select Ticket Type</option>
+                @foreach (var t in Model.TicketTypes)
+                {
+                    <option value="@t.TicketTypeId">@t.TicketTypeName</option>
+                }
+            </select>
+        </div>
+
+        <div class="post-ticket-form__item">
+            <label class="post-ticket-form__label" for="PriorityId">Priority</label>
+            <select class="post-ticket-form__input" id="PriorityId" name="PriorityId" required>
+                <option value="" selected>Select Priority</option>
+                @foreach (var p in Model.Priorities)
+                {
+                    <option value="@p.PriorityId">@p.PriorityName</option>
+                }
+            </select>
+        </div>
+
+        <div class="post-ticket-form__item">
+            <label class="post-ticket-form__label" for="SeverityId">Severity</label>
+            <select class="post-ticket-form__input" id="SeverityId" name="SeverityId" required>
+                <option value="" selected>Select Severity</option>
+                @foreach (var s in Model.Severities)
+                {
+                    <option value="@s.SeverityId">@s.SeverityName</option>
+                }
+            </select>
+        </div>
+
+        <div class="post-ticket-form__item">
+            <label class="post-ticket-form__label" for="description">Description</label>
+            <input class="post-ticket-form__input" type="text" id="description" name="description" placeholder="Please enter description" required>
+        </div>
+
+        <div class="post-ticket-form__item">
+            <label class="post-ticket-form__label" for="summary">Summary</label>
+            <input class="post-ticket-form__input" type="text" id="summary" name="summary" placeholder="Please enter summary" required>
+        </div>
+
+        <div class="post-ticket-form__item">
+            <label class="post-ticket-form__label" for="StatusId">Status</label>
+            <select class="post-ticket-form__input" id="StatusId" name="StatusId" required>
+                <option value="" selected>Select Status</option>
+                @foreach (var s in Model.Statuses)
+                {
+                    <option value="@s.StatusId">@s.StatusName</option>
+                }
+            </select>
+        </div>
+
+        <div>
+            <button class="post-ticket-form__btn" type="submit">Add</button>
+        </div>
+    </form>
+</div>

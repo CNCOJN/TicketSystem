@@ -1,0 +1,40 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"]</title>
+    <link rel="stylesheet" href="~/css/site.css" />
+    @await RenderSectionAsync("Styles", required: false)
+</head>
+<body>
+    <div class="container">
+        <header>
+            <nav>
+                <div class="nav__logo"><a asp-controller="Home" asp-action="Index">TS</a></div>
+                <ul class="nav__items">
+                    <li class="nav__item"><a asp-controller="Home" asp-action="Index">Home</a></li>
+                    @if (@User.Identity.IsAuthenticated)
+                    {
+                        <li class="nav__item"><a asp-controller="Ticket" asp-action="Index">Ticket</a></li>
+                        <form asp-controller="Account" , asp-action="Logout" asp-antiforgery="true" method="post">
+                        <li class="nav__item">
+                            <button class="nav__item-logout" type="submit">Log Out</button>
+                        </li>
+                        </form>
+                    }
+                </ul>
+            </nav>
+        </header>
+
+        <main>
+            @RenderBody()
+        </main>
+
+        <footer>
+            <div>&copy;Ren - Ticket System Implementations</div>
+        </footer>
+    </div>
+    @await RenderSectionAsync("Scripts", required: false)
+</body>
+</html>

@@ -1,0 +1,127 @@
+﻿@model IEnumerable<Application.Dtos.TicketDto>;
+@using Microsoft.AspNetCore.Http
+@inject IHttpContextAccessor HttpContextAccessor
+@{
+    ViewData["Title"] = "Ticket";
+    var name = User.Claims.FirstOrDefault(x => x.Type.ToLowerInvariant() == "name")?.Value.ToLowerInvariant();
+    var role = User.Claims.FirstOrDefault(x => x.Type.ToLowerInvariant() == "role")?.Value.ToLowerInvariant();
+    var pageNumber = HttpContextAccessor.HttpContext.Session.GetInt32("page");
+    var totalPages = HttpContextAccessor.HttpContext.Session.GetInt32("totalPages");
+}
+
+@section Styles{
+    <link rel="stylesheet" href="~/css/Ticket/ticketIndex.css" />
+}
+
+<div class="flex-container">
+    <h1 class="flex-container__header">Ticket</h1>
+    <div class="ticket-container">
+         <div class="ticket__add">
+            <form method="get">
+                <button 
+                    class="ticket__add__btn" 
+                    asp-controller="Ticket" 
+                    asp-action="PostTicketForm" 
+                >Add</button>
+            </form>
+        </div>
+        <table class="ticket-container__table">
+            <tr class="ticket__tr">
+                <th class="ticket__th">Id</th>
+                <th class="ticket__th">Type</th>
+                <th class="ticket__th">Priority</th>
+                <th class="ticket__th">Severity</th>
+                <th class="ticket__th">Description</th>
+                <th class="ticket__th">Summary</th>
+                <th class="ticket__th">Created By</th>
+                <th class="ticket__th">Role</th>
+                <th class="ticket__th">Status</th>
+                <th class="ticket__th" colspan="3">Actions</th>
+            </tr>
+            @foreach (var t in Model)
+            {
+                <tr class="ticket__tr">
+                    <td class="ticket__td">@t.Id</td>
+                    <td class="ticket__td">@t.TicketTypeName</td>
+                    <td class="ticket__td">@t.PriorityName</td>
+                    <td class="ticket__td">@t.SeverityName</td>
+                    <td class="ticket__td">@t.Description</td>
+                    <td class="ticket__td">@t.Summary</td>
+                    <td class="ticket__td">@t.CreaterName</td>
+                    <td class="ticket__td">@t.CreaterRoleName</td>
+                    <td class="ticket__td">@t.StatusName</td>
+                    <td class="ticket__td ticket__td-actions">
+                        <form method="post">
+                            @if (
+                           (role == "rd" && t.TicketTypeName.ToLowerInvariant() == "bug" && t.StatusName.ToLowerInvariant() != "resolved")
+                           || (role == "rd" && t.TicketTypeName.ToLowerInvariant() == "feature request" && t.StatusName.ToLowerInvariant() != "resolved")
+                           || (role == "qa" && t.TicketTypeName.ToLowerInvariant() == "test case" && t.StatusName.ToLowerInvariant() != "resolved")
+                           || (role == "admin" && t.StatusName.ToLowerInvariant() != "resolved")
+                           )
+                            {
+                                <button 
+                                    class="ticket__btn ticket__btn-resolved" 
+                                    asp-controller="Ticket" 
+                                    asp-action="Resolved" 
+                                    asp-route-id="@t.Id" 
+                                    asp-route-page="@pageNumber"
+                                >Resolved</button>
+                            }
+                            @if (
+                           (role == t.CreaterRoleName.ToLowerInvariant() && name == t.CreaterName.ToLowerInvariant())
+                           || (role == "admin")
+                           )
+                            {
+                                <button 
+                                    class="ticket__btn ticket__btn-edit" 
+                                    asp-controller="Ticket" 
+                                    asp-action="Edit" 
+                                    asp-route-id="@t.Id"
+                                >Edit</button>
+                                <button 
+                                    class="ticket__btn ticket__btn-delete" 
+                                    asp-controller="Ticket" 
+                                    asp-action="Index" 
+                                    asp-route-id="@t.Id"
+                                >Delete</button>
+                            }
+                        </form>
+                    </td>
+                </tr>
+            }
+        </table>
+        <div class="page__btns">
+            <form method="post">
+                <button 
+                    class="page__btn" 
+                    asp-controller="Ticket" 
+                    asp-action="GetFirstOrLastPage" 
+                    asp-route-page="1" 
+                    disabled="@(pageNumber == 1)"
+                >First</button>
+                <button 
+                    class="page__btn" 
+                    asp-controller="Ticket" 
+                    asp-action="Previous" 
+                    asp-route-page="@pageNumber" 
+                    disabled="@(pageNumber == 1)"
+                >Previous</button>
+                <button 
+                    class="page__btn" 
+                    asp-controller="Ticket" 
+                    asp-action="Next" 
+                    asp-route-page="@pageNumber" 
+                    asp-route-totalPages="@totalPages" 
+                    disabled="@(pageNumber == totalPages)"
+                >Next</button>
+                <button 
+                    class="page__btn" 
+                    asp-controller="Ticket" 
+                    asp-action="GetFirstOrLastPage" 
+                    asp-route-page="@totalPages" 
+                    disabled="@(pageNumber == totalPages)"
+                >Last</button>
+            </form>
+        </div>
+    </div>
+</div>
